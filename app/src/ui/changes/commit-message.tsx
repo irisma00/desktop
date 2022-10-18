@@ -299,8 +299,12 @@ export class CommitMessage extends React.Component<
       : this.state.summary
   }
 
+  private get descriptionOrPlaceholder() {
+    return !this.state.description ? '' : this.state.description
+  }
+
   private async createCommit() {
-    const { description } = this.state
+    const { description} = this.state
 
     if (!this.canCommit() && !this.canAmend()) {
       return
@@ -582,7 +586,7 @@ export class CommitMessage extends React.Component<
   private onFocusContainerClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (this.descriptionComponent) {
       this.descriptionComponent.focus()
-    }
+    } 
   }
 
   /**
@@ -662,8 +666,9 @@ export class CommitMessage extends React.Component<
   private renderSubmitButton() {
     const { isCommitting, branch, commitButtonText } = this.props
     const isSummaryBlank = isEmptyOrWhitespace(this.summaryOrPlaceholder)
+    const isDescriptionBlank = isEmptyOrWhitespace(this.descriptionOrPlaceholder) 
     const buttonEnabled =
-      (this.canCommit() || this.canAmend()) && !isCommitting && !isSummaryBlank
+      (this.canCommit() || this.canAmend()) && !isCommitting && !isSummaryBlank && !isDescriptionBlank
 
     const loading = isCommitting ? <Loading /> : undefined
 
@@ -682,12 +687,14 @@ export class CommitMessage extends React.Component<
       tooltip = isAmending ? amendTitle : commitTitle
     } else {
       if (isSummaryBlank) {
-        tooltip = `A commit summary is required to commit`
+        tooltip = `Explaination for what commit change has been made is required`
       } else if (!this.props.anyFilesSelected && this.props.anyFilesAvailable) {
         tooltip = `Select one or more files to commit`
       } else if (isCommitting) {
         tooltip = `Committing changes…`
-      }
+      } else if (isDescriptionBlank) {
+        tooltip = `Reason for commit change is required`
+      }  
     }
 
     const defaultCommitContents =
@@ -796,9 +803,11 @@ export class CommitMessage extends React.Component<
           className="description-focus-container"
           onClick={this.onFocusContainerClick}
         >
+
           <AutocompletingTextArea
+            isRequired={true}
             className={descriptionClassName}
-            placeholder="Description"
+            placeholder="Explain WHY you made the change (required)"
             value={this.state.description || ''}
             onValueChanged={this.onDescriptionChanged}
             autocompletionProviders={this.props.autocompletionProviders}
@@ -807,7 +816,7 @@ export class CommitMessage extends React.Component<
             onContextMenu={this.onAutocompletingInputContextMenu}
             disabled={this.props.isCommitting === true}
             spellcheck={this.props.commitSpellcheckEnabled}
-          />
+          /> 
           {this.renderActionBar()}
         </FocusContainer>
 
