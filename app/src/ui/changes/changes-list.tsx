@@ -36,7 +36,7 @@ import { IAutocompletionProvider } from '../autocompletion'
 import { showContextualMenu } from '../../lib/menu-item'
 import { arrayEquals } from '../../lib/equality'
 import { clipboard } from 'electron'
-import { basename } from 'path'
+// import { basename } from 'path'
 import { Commit, ICommitContext } from '../../models/commit'
 import {
   RebaseConflictState,
@@ -693,24 +693,28 @@ export class ChangesList extends React.Component<
     prepopulateCommitSummary: boolean
   ) {
     if (!prepopulateCommitSummary) {
-      return 'Summary (required)'
+      return 'What change has been made (required)'
     }
 
     const firstFile = files[0]
-    const fileName = basename(firstFile.path)
+    // const fileName = basename(firstFile.path)
 
     switch (firstFile.status.kind) {
       case AppFileStatusKind.New:
       case AppFileStatusKind.Untracked:
-        return `Create ${fileName}`
+        return 'What change has been made (required)'
+        // return `Create ${fileName}`
+      
       case AppFileStatusKind.Deleted:
-        return `Delete ${fileName}`
+        return 'What change has been made (required)'
+        // return `Delete ${fileName}`
       default:
         // TODO:
         // this doesn't feel like a great message for AppFileStatus.Copied or
         // AppFileStatus.Renamed but without more insight (and whether this
         // affects other parts of the flow) we can just default to this for now
-        return `Update ${fileName}`
+        return 'What change has been made (required)'
+        // return `Update ${fileName}`
     }
   }
 
